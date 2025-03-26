@@ -63,10 +63,10 @@ class Parser:
                         "value": param.text,
                     })
             self.products_list.append(card)
+
     def get_category_name(self):
         if self.categories_list:
             self.category_name = self.categories_list[-1]["name"]
-
 
     def get_all_data(self):
         self.get_data_from_url()

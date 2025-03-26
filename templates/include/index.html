@@ -6,16 +6,16 @@
     <div class="container">
       <div class="row mt-5">
         <div class="col-md-12">
-            <form id="form_args" class="mb-5">
+            <form class="mb-5">
                 <div class="container">
                     <div class="row mt-1 g-3 justify-content-center">
                         <div class="col-md-4">
                             <input type="search" class="form-control" placeholder="api url..." autocomplete="off" id="search_input"
-                            value="https://products.mti.ua/api/?action=loadContent&key=Sqceh4xB9PvL&cat_id=216">
+                            value="">
                         </div>
                         <div class="col-md-2 d-flex justify-content-center">
                             <div class="form-group">
-                                <a id="get_data" class="btn btn-primary">Завантажити</a>
+                                <a id="get_data" class="btn btn-outline-success">Завантажити</a>
                             </div>
                         </div>
                     </div>
@@ -23,7 +23,7 @@
             </form>
 
             {% include "component/spinner.html" %}
-            <h2 id="category_name" class="border-bottom text-center mb-5"></h2>
+            <h2 id="category_name" class="border-bottom text-center mb-5 mt-5"></h2>
             <div class="row" id="products_list"></div>
         </div>
       </div>

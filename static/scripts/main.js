@@ -42,15 +42,16 @@ function renderCard(products) {
 function createCard(product) {
     const cardId = `${product.id}`;
     const card = document.createElement('div');
-    card.className = 'col-sm-6';
+    card.className = 'col-sm-4';
     card.innerHTML = `
         <div class="card mb-4">
-            <img class="card-img-top" src="${product.detail_picture}" alt="Card image" style="width: 8rem;">
+<!--            <img class="card-img-top" src="${product.detail_picture}" alt="Card image" style="width: 8rem;">-->
+            <img class="card-img-top fixed-height-img" src="${product.detail_picture}" alt="Card image">
             <div class="card-body">
                 <h5 class="card-title">${product.name}</h5>
                 <div class="col align-self-center">
                     <p class="card-text">id: ${cardId}</p>
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-center">
                         <button type="button" class="btn btn-secondary me-2" id="btn-img-${cardId}" onclick="btnEventImg(${cardId})"> 
                             Завантажити фото
                         </button>
@@ -76,6 +77,7 @@ function createModal({modalId: modalId, title: title, cardAttributes: cardAttrib
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="${modalId}Label">${title}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-header">
                         <h7 class="modal-title">id: ${modalId}</h7>
@@ -128,9 +130,9 @@ function createAttributeTable(cardAttributes) {
 
 function btnEventAttrs(idd) {
     // const buttonsCard = document.querySelector(`#btn-card-${idd}`);
-    console.log(idd)
+    // console.log(idd)
     const foundItem = dataBaseProducts.find(item => item.id === idd.toString());
-    console.log("foundItem", foundItem)
+    // console.log("foundItem", foundItem)
 
     createModal({
         modalId: idd,
@@ -140,9 +142,9 @@ function btnEventAttrs(idd) {
 }
 
 async function btnEventImg(idd) {
-    console.log(idd)
+    // console.log(idd)
     const foundItem = dataBaseProducts.find(item => item.id === idd.toString());
-    console.log("foundItem", foundItem)
+    // console.log("foundItem", foundItem)
 
     let data = {
         option: "saveImg",
@@ -163,7 +165,7 @@ async function btnEventImg(idd) {
     if (match && match[1]) {
         fileName = match[1]; // Извлекаем имя файла
     }
-    console.log(fileName)
+    // console.log(fileName)
     const url = window.URL.createObjectURL(response.data);
     const link = document.createElement('a');
     link.href = url;
