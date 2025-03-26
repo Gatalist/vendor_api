@@ -1,33 +1,71 @@
-// async function fetchAndParseXML(url) {
-//     const response = await fetch(url);
-//     const text = await response.text(); // Получаем XML как строку
-//
-//     const parser = new DOMParser();
-//     const xmlDoc = parser.parseFromString(text, "text/xml"); // Парсим XML в DOM-объект
-//
-//     return xmlDoc;
-// }
-//
-// // Использование
-// fetchAndParseXML("https://products.mti.ua/api/?action=loadContent&key=Sqceh4xB9PvL&cat_id=216").then(xmlDoc => {
-//     const products = xmlDoc.querySelectorAll("product");
-//
-//     products.forEach(product => {
-//         const id = product.getAttribute("id");
-//         const name = product.querySelector("param[code='name']").textContent;
-//         console.log(`ID: ${id}, Name: ${name}`);
-//     });
-// });
-//
+const tagInput = document.getElementById('search_input');
+const tagBtn = document.getElementById('get_data');
+const spinner = document.getElementById('loading-spinner');
+const categoryName = document.getElementById('category_name');
+const productsList = document.getElementById('products_list');
 
+let dataBaseProducts = {};
 
+tagBtn.addEventListener("click", async () => {
+  const inputValue = tagInput.value;
+  if (inputValue) {
+      let data = {
+        url: inputValue,
+    };
+    try {
+        categoryName.innerText = '';
+        productsList.innerHTML = '';
+        showSpinner()
+        const response = await axiosRequest({
+            method: "post", url: "/", data: data,
+        });
+        categoryName.innerText = `${response.data.category_name}  (${response.data.products_count} шт.)`;
+        dataBaseProducts = response.data.products_list;
+        renderCard(response.data.products_list)
+    } catch (error) {
+        console.log(error);
+    } finally {
+        hideSpinner()
+    }
+  } else {
+      tagInput.focus();
+  }
+});
+
+function renderCard(products) {
+    products.forEach(item => {
+        productsList.appendChild(createCard(item));
+    })
+}
+
+function createCard(product) {
+    const cardId = `${product.id}`;
+    const card = document.createElement('div');
+    card.className = 'col-sm-6';
+    card.innerHTML = `
+        <div class="card mb-4">
+            <img class="card-img-top" src="${product.detail_picture}" alt="Card image" style="width: 8rem;">
+            <div class="card-body">
+                <h5 class="card-title">${product.name}</h5>
+                <div class="col align-self-center">
+                    <div class="d-flex justify-content-between">
+                        <p class="card-text">id: ${cardId}</p>
+                        <button type="button" class="btn btn-primary" id="btn-card-${cardId}" onclick="addBtnEvent(${cardId})"> 
+                            Характеристики
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    return card;
+}
 
 function createModal({modalId: modalId, title: title, cardPicture: cardPicture, cardPhotos: cardPhotos, cardAttributes: cardAttributes}) {
     const existingModal = document.getElementById(modalId);
     if (existingModal) {
         existingModal.remove();
     }
-
     const modalHTML = `
         <div class="modal fade bd-example-modal-lg" id="${modalId}" tabindex="-1" role="dialog" aria-labelledby="${modalId}Label" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-lg">
@@ -73,7 +111,6 @@ function createAttributeTable(cardAttributes) {
             rowAttr.innerText = item.code_name;
         }
 
-
         const rowVal = document.createElement('div');
         rowVal.className = "col-7 border-bottom mt-2";
         rowVal.innerText = item.value;
@@ -86,28 +123,57 @@ function createAttributeTable(cardAttributes) {
 }
 
 function addBtnEvent(idd) {
-    const buttonsCard = document.querySelector(`#btn-card-${idd}`);
+    // const buttonsCard = document.querySelector(`#btn-card-${idd}`);
+    console.log(idd)
+    const foundItem = dataBaseProducts.find(item => item.id === idd.toString());
+    console.log("foundItem", foundItem)
+
     createModal({
         modalId: idd,
-        title: buttonsCard.dataset.name,
-        cardPicture: buttonsCard.dataset.picture,
-        cardPhotos: parseData(buttonsCard.dataset.photos),
-        cardAttributes: parseData(buttonsCard.dataset.attributes)
+        title: foundItem.name,
+        cardPicture: foundItem.picture,
+        cardPhotos: foundItem.photos,
+        cardAttributes: foundItem.attributes
     });
 }
 
-function parseData(data) {
-    try {
-        console.log("data befor ->", data);
-        if (data) {
-            const newData = JSON5.parse(data.replace(/None/g, null));
-            console.log("data after ->", newData);
-            return newData
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error("Помилка парсингу JSON:", error);
-        return null;
+async function axiosRequest({ method, url, data = null, params = null, headers = null, responseType = null }) {
+    let _headers = {
+        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+    };
+
+    if (headers) {
+        Object.assign(_headers, headers);
+    } else {
+        _headers["Accept"] = "application/json";
+        _headers["Content-Type"] = "application/json";
     }
+
+    const config = {
+        method,    // HTTP method (GET, POST, PUT, DELETE)
+        url,
+        data,      // Body
+        params,
+        headers: _headers,
+        responseType,
+    };
+    console.log("request server ->", config);
+
+    return await axios(config)
+        .then(response => {
+            console.log("response server Success <-", response);
+            return response;
+        })
+        .catch(error => {
+            console.log("response server Error <-", error);
+            throw error;
+        });
+}
+
+function showSpinner() {
+    spinner.classList.remove("d-none");
+}
+
+function hideSpinner() {
+    spinner.classList.add("d-none");
 }

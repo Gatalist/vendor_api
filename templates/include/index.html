@@ -6,49 +6,46 @@
     <div class="container">
       <div class="row mt-5">
         <div class="col-md-12">
-
-<!--            <form id="form_args" class="mb-5">-->
-<!--                <div class="container">-->
-<!--                    <div class="row mt-1 g-3 justify-content-center">-->
-<!--                        <div class="col-md-4">-->
-<!--                            <input type="search" class="form-control" placeholder="api url..." autocomplete="off" id="search_input">-->
-<!--                        </div>-->
-
-<!--                        <div class="col-md-2 d-flex justify-content-center">-->
-<!--                            <div class="form-group">-->
-<!--                                <a id="get_education_table" class="btn btn-success">Завантажити</a>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </form>-->
-
-            <h2 id="category_name" class="border-bottom text-center mb-5">{{ category_name }} ({{ products_count }} шт.)</h2>
-
-            {% include "component/spinner.html" %}
-
-            <div class="row" id="products_list">
-                {% for card in products_list %}
-                    <div class="col-sm-6">
-                      <div class="card mb-4">
-                        <img class="card-img-top" src="{{ card.detail_picture }}" alt="Card image" style="width: 8rem;">
-                        <div class="card-body">
-                          <h5 class="card-title">{{ card.name }}</h5>
-                            <div class="col align-self-center">
-                              <div class="d-flex justify-content-between">
-                                  <p class="card-text">id: {{ card.id }}</p>
-                                  <button type="submit" class="btn btn-primary" id="btn-card-{{card.id}}" onclick="addBtnEvent('{{card.id}}')"
-                                          data-name="{{ card.name }}"
-                                          data-picture="{{ card.detail_picture }}"
-                                          data-photos="{{ card.photos }}"
-                                          data-attributes="{{ card.attributes }}"
-                                  >Характеристики</button>
-                              </div>
+            <form id="form_args" class="mb-5">
+                <div class="container">
+                    <div class="row mt-1 g-3 justify-content-center">
+                        <div class="col-md-4">
+                            <input type="search" class="form-control" placeholder="api url..." autocomplete="off" id="search_input"
+                            value="https://products.mti.ua/api/?action=loadContent&key=Sqceh4xB9PvL&cat_id=216">
+                        </div>
+                        <div class="col-md-2 d-flex justify-content-center">
+                            <div class="form-group">
+                                <a id="get_data" class="btn btn-success">Завантажити</a>
                             </div>
                         </div>
-                      </div>
                     </div>
-                {% endfor %}
+                </div>
+            </form>
+
+            {% include "component/spinner.html" %}
+            <h2 id="category_name" class="border-bottom text-center mb-5"></h2>
+            <div class="row" id="products_list">
+<!--                {% for card in products_list %}-->
+<!--                    <div class="col-sm-6">-->
+<!--                      <div class="card mb-4">-->
+<!--                        <img class="card-img-top" src="{{ card.detail_picture }}" alt="Card image" style="width: 8rem;">-->
+<!--                        <div class="card-body">-->
+<!--                          <h5 class="card-title">{{ card.name }}</h5>-->
+<!--                            <div class="col align-self-center">-->
+<!--                              <div class="d-flex justify-content-between">-->
+<!--                                  <p class="card-text">id: {{ card.id }}</p>-->
+<!--                                  <button type="submit" class="btn btn-primary" id="btn-card-{{card.id}}" onclick="addBtnEvent('{{card.id}}')"-->
+<!--                                          data-name="{{ card.name }}"-->
+<!--                                          data-picture="{{ card.detail_picture }}"-->
+<!--                                          data-photos="{{ card.photos }}"-->
+<!--                                          data-attributes="{{ card.attributes }}"-->
+<!--                                  >Характеристики</button>-->
+<!--                              </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                {% endfor %}-->
             </div>
         </div>
       </div>
