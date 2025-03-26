@@ -9,9 +9,10 @@ let dataBaseProducts = {};
 tagBtn.addEventListener("click", async () => {
   const inputValue = tagInput.value;
   if (inputValue) {
-      let data = {
+    let data = {
+        option: "getProducts",
         url: inputValue,
-    };
+    }
     try {
         categoryName.innerText = '';
         productsList.innerHTML = '';
@@ -48,9 +49,12 @@ function createCard(product) {
             <div class="card-body">
                 <h5 class="card-title">${product.name}</h5>
                 <div class="col align-self-center">
+                    <p class="card-text">id: ${cardId}</p>
                     <div class="d-flex justify-content-between">
-                        <p class="card-text">id: ${cardId}</p>
-                        <button type="button" class="btn btn-primary" id="btn-card-${cardId}" onclick="addBtnEvent(${cardId})"> 
+                        <button type="button" class="btn btn-secondary me-2" id="btn-img-${cardId}" onclick="btnEventImg(${cardId})"> 
+                            Завантажити фото
+                        </button>
+                        <button type="button" class="btn btn-success" id="btn-card-${cardId}" onclick="btnEventAttrs(${cardId})"> 
                             Характеристики
                         </button>
                     </div>
@@ -61,7 +65,7 @@ function createCard(product) {
     return card;
 }
 
-function createModal({modalId: modalId, title: title, cardPicture: cardPicture, cardPhotos: cardPhotos, cardAttributes: cardAttributes}) {
+function createModal({modalId: modalId, title: title, cardAttributes: cardAttributes}) {
     const existingModal = document.getElementById(modalId);
     if (existingModal) {
         existingModal.remove();
@@ -122,7 +126,7 @@ function createAttributeTable(cardAttributes) {
     return container.innerHTML;
 }
 
-function addBtnEvent(idd) {
+function btnEventAttrs(idd) {
     // const buttonsCard = document.querySelector(`#btn-card-${idd}`);
     console.log(idd)
     const foundItem = dataBaseProducts.find(item => item.id === idd.toString());
@@ -131,10 +135,42 @@ function addBtnEvent(idd) {
     createModal({
         modalId: idd,
         title: foundItem.name,
-        cardPicture: foundItem.picture,
-        cardPhotos: foundItem.photos,
         cardAttributes: foundItem.attributes
     });
+}
+
+async function btnEventImg(idd) {
+    console.log(idd)
+    const foundItem = dataBaseProducts.find(item => item.id === idd.toString());
+    console.log("foundItem", foundItem)
+
+    let data = {
+        option: "saveImg",
+        cardId: idd,
+    }
+    if (foundItem.detail_picture) {
+        data["picture"] = foundItem.detail_picture
+    }
+    if (foundItem.photos) {
+        data["photos"] = foundItem.photos
+    }
+    const response = await axiosRequest({
+        method: "post", url: "/", data: data, responseType: 'blob'
+    });
+    let fileName = idd
+    const contentDisposition = response.headers['content-disposition'];
+    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+    if (match && match[1]) {
+        fileName = match[1]; // Извлекаем имя файла
+    }
+    console.log(fileName)
+    const url = window.URL.createObjectURL(response.data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 async function axiosRequest({ method, url, data = null, params = null, headers = null, responseType = null }) {

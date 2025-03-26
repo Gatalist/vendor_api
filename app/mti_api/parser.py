@@ -45,12 +45,12 @@ class Parser:
             card = {
                 "id": product.get("id"),
                 "cat_id": product.get("cat_id"),
-                "photos": {},
+                "photos": [],
                 "attributes": [],
             }
             for param in product.findall("param"):
                 if param.get("code") == "more_photo":
-                    card["photos"][param.get('id')] = param.text
+                    card["photos"].append({param.get('id'): param.text})
                 elif param.get("code") == "detail_picture":
                     card["detail_picture"] = param.text
                 elif param.get("code") == "name":

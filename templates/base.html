@@ -7,13 +7,13 @@
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
-    {% include "component/navbar.html" %}
+<!--    {% include "component/navbar.html" %}-->
     <div class="content">
         {% block main %}
 
         {% endblock %}
     </div>
-    {% include "component/footer.html" %}
+<!--    {% include "component/footer.html" %}-->
     {% include "component/scripts.html" %}
     {% block script %} {% endblock script %}
   </body>
