@@ -12,4 +12,5 @@ body {
 .content {
     flex-grow: 1;
     margin-top: var(--header-height);
+    margin-bottom: var(--footer-height);
 }
