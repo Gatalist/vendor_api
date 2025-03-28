@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Parser MTI-API{% endblock %}
+
+{% block main %}
+
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 id="category_name" class="border-bottom text-center mb-5">Підкатегорії</h2>
+        </div>
+    </div>
+</div>
+{% include "component/spinner.html" %}
+<div class="container">
+    <div class="row d-flex justify-content-start" id="subcategory_list">
+        {% for subcategory in subcategory_list %}
+            <div class="col-md-4 col-sm-6 col-12 mb-3">
+                <a href="{{ url_for('product.product_list', category_id=category_id, subcategory_id=subcategory.id) }}" class="btn btn-light w-100 text-center category-btn">{{ subcategory.name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock main %}

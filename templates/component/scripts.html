@@ -1,7 +1,9 @@
 <!-- bootstrap scripts  ============================================ -->
-<script src="{{ url_for('static', filename='scripts/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='scripts/libs/jquery-3.7.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='scripts/bootstrap/popper.min.2.11.8.js') }}"></script>
 <script src="{{ url_for('static', filename='scripts/bootstrap/bootstrap.min.5.3.3.js') }}"></script>
 
-<script src="{{ url_for('static', filename='scripts/axios.min.js') }}"></script>
-<script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+<!--<script src="{{ url_for('static', filename='scripts/libs/json5-2.2.3.min.js') }}"></script>-->
+<script src="{{ url_for('static', filename='scripts/libs/axios.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='scripts/src/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='scripts/src/category.js') }}"></script>
