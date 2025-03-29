@@ -27,21 +27,22 @@ body {
 
 .category-list {
     width: 100%;
-/*    padding: 10px;*/
-/*    text-decoration: none; !* Убирает подчеркивание у ссылок *!*/
     display: flex;
-/*    align-items: center; !* Центрирование по вертикали *!*/
-/*    justify-content: center; !* Центрирование по горизонтали *!*/
-/*    text-align: center; !* Выравнивание текста внутри блока *!*/
-/*    width: 100%;*/
-/*    height: 80px;*/
-/*    background-color: lightgray; !* Фон для наглядности *!*/
-/*    border-radius: 10%; !* Закругление 5% *!*/
-/*    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1); !* Легкая тень вниз и вправо *!*/
-/*    transition: transform 0.3s ease, box-shadow 0.3s ease;*/
 }
 
-/*.category-list:hover {*/
-/*    transform: scale(1.05); !* Немного увеличивает *!*/
-/*    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2); !* Усиливает тень *!*/
-/*}*/
+.product-image {
+    max-height: 400px;
+    width: auto;
+    object-fit: contain;
+}
+.thumbnail {
+    height: 50px;
+    width: auto;
+    object-fit: cover;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+.thumbnail:hover, .thumbnail.active {
+    opacity: 1;
+}

@@ -1,10 +1,9 @@
 from flask import jsonify
 from app.core.extensions import cache
-from app.mti_api.parser import ParserStructureCategory, ParserProductList
+from app.mti_api.parser import ParserMTI
 
 
-structure_category = ParserStructureCategory()
-category_indo = ParserProductList()
+parser = ParserMTI()
 
 
 class DatabaseCached:
@@ -19,8 +18,8 @@ class DatabaseCached:
             return cached_data
         else:
             print(f"Данные записаны в кэш")
-            structure_category.get_categories()
-            data_cache = [cat for cat in structure_category.categories if cat.get('parentID') == 0]
+            categories = parser.get_all_categories()
+            data_cache = [cat for cat in categories if cat.get('parentID') == 0]
             cache.set(name_cache, data_cache, timeout=self.cached_time)
             return data_cache
 
@@ -32,8 +31,7 @@ class DatabaseCached:
             return cached_data
         else:
             print(f"Данные записаны в кэш")
-            structure_category.get_categories()
-            data_cache = structure_category.categories
+            data_cache = parser.get_all_categories()
             cache.set(name_cache, data_cache, timeout=self.cached_time)
             return data_cache
 
@@ -44,7 +42,8 @@ class DatabaseCached:
             print(f"Получены закэшированные данные для категории {category_id}")
             return cached_data
         else:
-            data_cache = category_indo.get_all_data(category_id)
+            print(f"Данные записаны в кэш")
+            data_cache = parser.get_products_for_category(cat_id=category_id)
             cache.set(name_cache, data_cache, timeout=self.cached_time)
             return data_cache
 
@@ -53,14 +52,18 @@ class DatabaseCached:
         cached_data = cache.get(name_cache)
         if cached_data is not None:
             print(f"Получены закэшированные данные для категории {category_id}")
-            product_info = [product for product in cached_data.get("products_list") if product.get('id') == int(product_id)]
+            data_cache_products_list = cached_data["products_list"]
+            product_info = [product for product in data_cache_products_list if product.get('id') == int(product_id)]
             if product_info:
                 return product_info[0]
             return {}
         else:
-            data_cache = category_indo.get_all_data(category_id)
+            print(f"Данные записаны в кэш")
+            data_cache = parser.get_products_for_category(cat_id=category_id)
             cache.set(name_cache, data_cache, timeout=self.cached_time)
-            product_info = [product for product in data_cache.get("products_list") if product.get('id') == int(product_id)]
+            data_cache_products_list = data_cache["products_list"]
+            product_info = [product for product in data_cache_products_list if product.get('id') == int(product_id)]
+
             if product_info:
                 return product_info[0]
             return {}

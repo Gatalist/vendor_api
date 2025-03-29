@@ -3,18 +3,99 @@
 {% block title %}Parser MTI-API{% endblock %}
 
 {% block main %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-md-6 mb-4">
+            <div class="d-flex justify-content-center">
+                <img src="{{ product.detail_picture }}"
+                 alt="Product" class="img-fluid rounded mb-3 product-image" id="mainImage">
+            </div>
+            <div class="d-flex justify-content-center flex-wrap">
+                <img src="{{ product.detail_picture }}" alt="Thumbnail 1" class="me-1 thumbnail rounded active" onclick="changeImage(event, this.src)">
+                {% for photo_dict in product.photos %}
+                    {% for photo_id, photo_url in photo_dict.items() %}
+                        <img src="{{ photo_url }}" alt="Thumbnail 2" class="me-1 thumbnail rounded" onclick="changeImage(event, this.src)">
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
 
-<div class="container">
-    <div class="row mt-5">
-        <div class="col-12">
-            <h2 id="category_name" class="border-bottom text-center mb-5">{{product.name}}</h2>
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <h2 class="mb-3">{{product.name}}</h2>
+            <p class="text-muted mb-4">ID: {{product.id}}</p>
+
+            {% for attribute in product.attributes %}
+                {% if attribute.code_name == 'preview_text' and attribute.value %}
+                    <p class="mb-4">
+                        {{ attribute.value }}
+                    </p>
+                {% endif %}
+
+                {% if attribute.code_name == 'file' and attribute.code_value == 'Інструкції / Брошури / Гарантійні талони' and attribute.value %}
+                    <div class="d-flex justify-content-start">
+                        <div class="col-md-4 col-sm-6 col-12 mb-3">
+                            <a href="#" class="btn btn-secondary">Інструкція</a>
+                        </div>
+
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="d-flex justify-content-start">
+                <div class="col-md-4 col-sm-6 col-12 mb-3">
+                    <a href="#" class="btn btn-secondary">Фото (оригінал)</a>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <div class="col-md-4 col-sm-6 col-12 mb-3">
+                    <a href="#" class="btn btn-secondary">Фото (webp)</a>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="col-md-12">
+
+            {% if product.attributes %}
+                <ul class="list-group">
+                    {% for attribute in product.attributes %}
+                         {% if attribute.value %}
+                            {% if attribute.code_name != 'preview_text' %}
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-6 fw-bold">
+                                            {% if attribute.code_value %}
+                                                {{ attribute.code_value }}
+                                            {% else %}
+                                                {{ attribute.code_name }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-6 text-start">
+                                            {{ attribute.value }}
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <h5 class="mе-5">Характеристики відсутні</h5>
+            {% endif %}
+
         </div>
     </div>
 </div>
-{% include "component/spinner.html" %}
-<div class="container">
 
-    card info
-
-</div>
+<script>
+    function changeImage(event, src) {
+        document.getElementById('mainImage').src = src;
+        document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+</script>
 {% endblock main %}

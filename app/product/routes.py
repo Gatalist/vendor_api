@@ -30,7 +30,7 @@ class ProductListView(DatabaseCached, MethodView):
         context = self.get_products_category(subcategory_id)
         context["category_id"] = category_id
         context["subcategory_id"] = subcategory_id
-        print("product context:", context)
+        # print("product context:", context)
         return render_template('include/product_list.html', **context)
 
 
