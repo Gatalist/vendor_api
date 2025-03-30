@@ -94,4 +94,3 @@ copyToClipboard.forEach(button => {
         }
     })
 })
-

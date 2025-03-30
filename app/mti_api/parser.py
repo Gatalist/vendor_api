@@ -33,8 +33,14 @@ class ParserMTI:
                 "name": category.text
             })
         if last_name:
-            last_cat = categories[-1]
-            return last_cat["name"]
+            if len(categories) == 1:
+                last_cat = categories[0]["name"]
+
+            elif len(categories) > 1:
+                last_cat = categories[-1]["name"]
+            else:
+                last_cat = ""
+            return last_cat
         else:
             return categories
 

@@ -55,6 +55,7 @@
             {% for attribute in product.attributes %}
                 {% if attribute.code_name == 'preview_text' and attribute.value %}
                     <p class="mb-4">
+                        preview_text:
                         <span id="copyText-{{ attribute.code_name }}">
                             {{ attribute.value }}
                         </span>
@@ -133,14 +134,15 @@
     </div>
 </div>
 
-<script>
-    function changeImage(event, src) {
-        document.getElementById('mainImage').src = src;
-        document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
-        event.target.classList.add('active');
-    }
-</script>
-
-<script type="module" src="{{ url_for('static', filename='scripts/src/product-detail.js') }}"></script>
 {% endblock main %}
 
+{% block scripts %}
+    <script>
+        function changeImage(event, src) {
+            document.getElementById('mainImage').src = src;
+            document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+    </script>
+    <script type="module" src="{{ url_for('static', filename='scripts/src/product-detail.js') }}"></script>
+{% endblock %}
