@@ -1,6 +1,7 @@
-from flask import render_template
+from flask import render_template, jsonify, request
 from flask.views import MethodView
 from .cached import DatabaseCached
+from app.mti_api.downloader import download_and_convert_images, download_file_in_zip
 
 
 class CategoryView(DatabaseCached, MethodView):
@@ -46,46 +47,59 @@ class ProductDetailView(DatabaseCached, MethodView):
         return render_template('include/product_detail.html', **context)
 
 
+class ProductFilesView(DatabaseCached, MethodView):
+    def post(self):
+        data = request.get_json()
+        option = data.get('option')
+        subcategory_id = data.get('subcategoryId')
+        product_id = data.get('productId')
+        product = self.get_product_info(subcategory_id, product_id)
+        print("data:", data)
+
+        if option == 'getImageWebp':
+            picture = product['detail_picture']
+            photos = product['photos']
+
+            imgs = []
+            if picture:
+                imgs.append({product_id: picture})
+            if photos:
+                imgs.extend(photos)
+            if imgs:
+                return download_and_convert_images(image_urls=imgs, name_zip=product_id)
+            else:
+                return jsonify({'error': 'no image'}), 400
+
+        if option == 'getImageOrigin':
+            picture = product['detail_picture']
+            photos = product['photos']
+
+            imgs = []
+            if picture:
+                imgs.append({product_id: picture})
+            if photos:
+                imgs.extend(photos)
+            if imgs:
+                return download_file_in_zip(links=imgs, name_zip=product_id, filename="image")
+            else:
+                return jsonify({'error': 'no image'}), 400
+
+        if option == 'getInstruction':
+            attributes = product.get('attributes')
+            files = []
+            count = 1
+            print("attributes:", attributes)
+            if attributes:
+                for attribute in attributes:
+                    if attribute.get('code_name') == 'file':
+                        print(attribute)
+                        files.append({attribute.get("id") or f"file_{count}": attribute.get("value")})
+                        count += 1
+            print("files:", files)
+            if files:
+                return download_file_in_zip(links=files, name_zip=product_id, filename="file")
+            else:
+                return jsonify({'error': 'no files'}), 400
+
+
 # http://127.0.0.1:5000/7/1815/3729196
-
-
-
-# class ProductView(MethodView):
-#     def get(self):
-#         return render_template('include/index.html')
-#
-#     def post(self):
-#         data = request.get_json()
-#         option = data.get('option')
-#
-#         if option == 'getProducts':
-#             cat_id = data.get('url')
-#             print(cat_id)
-#
-#             # https://products.mti.ua/api/?action=loadContent&key=Sqceh4xB9PvL&cat_id=216
-#             # parser = ParserProductList(cat_id=cat_id)
-#             # context = parser.get_all_data()
-#             parser = ParserStructureCategory()
-#             parser.get_categories()
-#             tree = parser.build_tree(0, parser.categories)
-#             print("tree:", tree)
-#             # print("tree:", json.dumps(tree, ensure_ascii=False, indent=2))
-#             context = tree
-#             return jsonify(context), 200
-#
-#         if option == 'saveImg':
-#             imgs = []
-#             picture = data.get('picture')
-#             photos = data.get('photos')
-#             card_id = data.get('cardId')
-#             if picture:
-#                 imgs.append({card_id: picture})
-#             if photos:
-#                 imgs.extend(photos)
-#             if imgs:
-#                 return download_and_convert_images(image_urls=imgs, name_zip=card_id)
-#             else:
-#                 return jsonify({'error': 'no image'}), 400
-#
-#         else:
-#             return jsonify({'error': 'url invalid'}), 400

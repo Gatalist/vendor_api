@@ -10,7 +10,7 @@ class DatabaseCached:
     def __init__(self):
         self.cached_time = 60 * 60 * 12 # in seconds
 
-    def get_main_categories(self):
+    def get_main_categories(self) -> list:
         name_cache = 'main_categories'
         cached_data = cache.get(name_cache)
         if cached_data is not None:
@@ -23,7 +23,7 @@ class DatabaseCached:
             cache.set(name_cache, data_cache, timeout=self.cached_time)
             return data_cache
 
-    def get_all_categories(self):
+    def get_all_categories(self) -> list:
         name_cache = 'all_categories'
         cached_data = cache.get(name_cache)
         if cached_data is not None:
@@ -35,7 +35,7 @@ class DatabaseCached:
             cache.set(name_cache, data_cache, timeout=self.cached_time)
             return data_cache
 
-    def get_products_category(self, category_id):
+    def get_products_category(self, category_id: int) -> dict:
         name_cache = f'products_list_{category_id}'
         cached_data = cache.get(name_cache)
         if cached_data is not None:
@@ -47,7 +47,7 @@ class DatabaseCached:
             cache.set(name_cache, data_cache, timeout=self.cached_time)
             return data_cache
 
-    def get_product_info(self, category_id, product_id):
+    def get_product_info(self, category_id: int, product_id: int) -> dict:
         name_cache = f'products_list_{category_id}'
         cached_data = cache.get(name_cache)
         if cached_data is not None:

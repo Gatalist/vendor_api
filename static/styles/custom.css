@@ -46,3 +46,21 @@ body {
 .thumbnail:hover, .thumbnail.active {
     opacity: 1;
 }
+
+.copyToClipboard {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out; /* Плавные переходы */
+    opacity: 0.8; /* Немного прозрачный по умолчанию */
+}
+
+.copyToClipboard:hover {
+    transform: scale(1.1); /* Увеличение при наведении */
+    opacity: 1; /* Полностью непрозрачный при наведении */
+    width: 32px;
+}
+
+.copyToClipboard.clicked {
+    transform: scale(0.9); /* Уменьшение при нажатии */
+    opacity: 0.6; /* Еще более прозрачный при нажатии */
+    width: 33px;
+}

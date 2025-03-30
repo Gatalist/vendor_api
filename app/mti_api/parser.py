@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as ET
-from collections import defaultdict
-
+import time
 import requests
 
 
@@ -13,7 +12,7 @@ class ParserMTI:
         self.action_category_list = "getCatalog"
         self.params = {}
 
-    def get_data_from_url(self, cat_id=None):
+    def get_data_from_url(self, cat_id: int = None):
         if cat_id is None:
             url = self.base_url + self.action_category_list + self.key
         else:
@@ -25,7 +24,7 @@ class ParserMTI:
     def get_products_count(self):
         return self.xml_root.find("products_count").text
 
-    def get_products_categories(self, last_name=False):
+    def get_products_categories(self, last_name: bool = False) -> list:
         categories = []
         for category in self.xml_root.find("categorieslist").findall("category"):
             categories.append({
@@ -39,40 +38,44 @@ class ParserMTI:
         else:
             return categories
 
-    def get_params_list(self):
+    def get_params_list(self) -> dict:
         params = {}
         for param in self.xml_root.find("paramslist").findall("param"):
             params[param.get("code")] = param.get("name")
         return params
 
-    def get_products_list(self):
+    def get_products_list(self) -> list:
         params = self.get_params_list()
         products_list = []
         for product in self.xml_root.find("productslist").findall("product"):
+            product_id = int(product.get("id")) if product.get("id") else ''
+            cat_id = int(product.get("cat_id")) if product.get("cat_id") else ''
             card = {
-                "id": int(product.get("id")) if product.get("id") else None,
-                "cat_id": int(product.get("cat_id")) if product.get("cat_id") else None,
+                "id": product_id,
+                "cat_id": cat_id,
                 "photos": [],
                 "attributes": [],
             }
             for param in product.findall("param"):
-                if param.get("code") == "more_photo":
+                if param.get("code") == "more_photo" and param.text:
                     card["photos"].append({param.get('id'): param.text})
-                elif param.get("code") == "detail_picture":
+                elif param.get("code") == "detail_picture" and param.text:
                     card["detail_picture"] = param.text
-                elif param.get("code") == "name":
+                elif param.get("code") == "name" and param.text:
                     card["name"] = param.text
                 else:
-                    card["attributes"].append({
-                        "id": param.get('id'),
-                        "code_name": param.get("code"),
-                        "code_value": params.get(param.get("code")),
-                        "value": param.text,
-                    })
+                    if param.text:
+                        card["attributes"].append({
+                            "id": param.get("id") if param.get("id") else f"{time.time()}",
+                            "code_name": param.get("code"),
+                            "code_value": params.get(param.get("code")),
+                            "value": param.text,
+                        })
+
             products_list.append(card)
         return products_list
 
-    def get_products_for_category(self, cat_id):
+    def get_products_for_category(self, cat_id: int) -> dict:
         self.get_data_from_url(cat_id)
 
         return {
@@ -81,7 +84,7 @@ class ParserMTI:
             "category_name": self.get_products_categories(last_name=True),
         }
 
-    def get_all_categories(self):
+    def get_all_categories(self) -> list:
         self.get_data_from_url()
         categories = []
         categories_list = self.xml_root.find("categorieslist")
