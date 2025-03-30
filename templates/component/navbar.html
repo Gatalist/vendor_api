@@ -18,9 +18,11 @@
           <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="{{ url_for('product.category_list') }}">Головна</a>
           </li>
-          <form class="d-flex" role="search">
-            <input id="searchInput" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          </form>
+          {% if is_search %}
+            <form class="d-flex" role="search">
+              <input id="searchInput" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            </form>
+          {% endif %}
         </ul>
       </div>
     </div>

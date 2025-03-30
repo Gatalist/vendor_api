@@ -6,9 +6,12 @@ from app.mti_api.downloader import download_and_convert_images, download_file_in
 
 class CategoryView(DatabaseCached, MethodView):
     def get(self):
-        categories = self.get_main_categories()
+        context = {
+            "category_list": self.get_main_categories(),
+            "is_search": True,
+        }
         # print("category tree:", categories)
-        return render_template('include/category_list.html', category_list=categories)
+        return render_template('include/category_list.html', **context)
 
 
 class SubCategoryView(DatabaseCached, MethodView):
@@ -20,7 +23,8 @@ class SubCategoryView(DatabaseCached, MethodView):
 
         context = {
             "category_id": category_id,
-            "subcategory_list": subcategory_list
+            "subcategory_list": subcategory_list,
+            "is_search": True,
         }
         # print("subcategory context:", context)
         return render_template('include/subcategory_list.html', **context)
@@ -31,6 +35,7 @@ class ProductListView(DatabaseCached, MethodView):
         context = self.get_products_category(subcategory_id)
         context["category_id"] = category_id
         context["subcategory_id"] = subcategory_id
+        context["is_search"] = True
         # print("product context:", context)
         return render_template('include/product_list.html', **context)
 
@@ -42,6 +47,7 @@ class ProductDetailView(DatabaseCached, MethodView):
             "product": product,
             "category_id": category_id,
             "subcategory_id": subcategory_id,
+            "is_search": False,
         }
         print("product context:", context)
         return render_template('include/product_detail.html', **context)
