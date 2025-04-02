@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mti_database
+    env_file:
+      - .env
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - web_net
+    volumes:
+      - ./db_volume:/var/lib/postgresql
+
+  app:
+    build: .
+    container_name: mti_web_app
+    env_file:
+      - .env
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
+#             gunicorn core.wsgi:application --bind 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./source:/web_application
+    networks:
+      - web_net
+
+networks:
+  web_net:
+    driver: bridge
