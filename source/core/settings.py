@@ -15,7 +15,7 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 DEBUG = env.bool("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
-
+print("ALLOWED_HOSTS", ALLOWED_HOSTS)
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -1,5 +1,5 @@
 services:
-  db:
+  mti-database:
     image: postgres:16-alpine
     container_name: mti_database
     env_file:
@@ -7,30 +7,53 @@ services:
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
     networks:
-      - web_net
+      - web-net
     volumes:
       - ./db_volume:/var/lib/postgresql
 
-  app:
+  mti-app:
     build: .
-    container_name: mti_web_app
+    container_name: mti_app
     env_file:
       - .env
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
-    command: >
-      sh -c "python manage.py makemigrations &&
-             python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             python manage.py runserver 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
-#             gunicorn core.wsgi:application --bind 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
+
+    command: sh -c "gunicorn core.wsgi:application --bind 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
+#    command: >
+#      sh -c "python manage.py makemigrations &&
+#             python manage.py migrate &&
+#             python manage.py collectstatic --noinput &&
+#             python manage.py runserver 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
     ports:
-      - 8000:8000
+      - "8000:8000"
     volumes:
-      - ./source:/web_application
+      - ./source:/app
     networks:
-      - web_net
+      - web-net
+
+  mti-nginx:
+    container_name: mti_nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+#      - "443:443"
+    command: "/bin/sh /nginx-start-autoreload.sh"
+    volumes:
+      - ./source/staticfiles:/app/staticfiles
+      - ./nginx/conf_dev/:/etc/nginx/conf.d/:ro
+      - ./nginx/nginx-start-autoreload.sh:/nginx-start-autoreload.sh
+    environment:
+      - DJANGO_PORT=${DJANGO_PORT:?error missing DJANGO_PORT env}
+    depends_on:
+      - mti-app
+    networks:
+      - web-net
+    restart: always
 
 networks:
-  web_net:
+  web-net:
     driver: bridge
+
+volumes:
+  django_volume:
