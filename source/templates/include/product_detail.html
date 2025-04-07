@@ -52,30 +52,33 @@
                     <img height="30" src="{% static 'images/copy.svg' %}">
                 </span>
             </div>
+            {% with show_button=False %}
+                {% for attribute in product.attributes %}
+                    {% if attribute.code_name == 'preview_text' and attribute.value %}
+                        <p class="mb-4">
+                            preview_text:
+                            <span id="copyText-{{ attribute.code_name }}">
+                                {{ attribute.value }}
+                            </span>
+                            <span class="copyToClipboard" id="copyToClipboard-{{ attribute.code_name }}">
+                                <img height="30" src="{% static 'images/copy.svg' %}">
+                            </span>
+                        </p>
+                    {% endif %}
 
-            {% for attribute in product.attributes %}
-                {% if attribute.code_name == 'preview_text' and attribute.value %}
-                    <p class="mb-4">
-                        preview_text:
-                        <span id="copyText-{{ attribute.code_name }}">
-                            {{ attribute.value }}
-                        </span>
-                        <span class="copyToClipboard" id="copyToClipboard-{{ attribute.code_name }}">
-                            <img height="30" src="{% static 'images/copy.svg' %}">
-                        </span>
-                    </p>
-                {% endif %}
-
-                {% if attribute.code_name == 'file' and attribute.value %}
-                    <div class="d-flex justify-content-start">
-                        <div class="col-md-4 col-sm-6 col-12 mb-3">
-                            <button id="instruction" class="btn btn-secondary">
-                                Інструкція <span id="spinner-instruction" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                            </button>
+                    {% if attribute.code_name == 'file' and attribute.value and not show_button %}
+                        <div class="d-flex justify-content-start">
+                            <div class="col-md-4 col-sm-6 col-12 mb-3">
+                                <button id="instruction" class="btn btn-secondary">
+                                    Інструкція <span id="spinner-instruction" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
+                        {% with True as show_button %}
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            {% endwith %}
 
             {% if product.photos or product.detail_picture %}
                 <div class="d-flex justify-content-start">
@@ -104,14 +107,14 @@
                             {% if attribute.code_name != 'preview_text' %}
                                 <li class="list-group-item">
                                     <div class="row">
-                                        <div class="col-6 fw-bold">
+                                        <div class="col-5 fw-bold">
                                             {% if attribute.code_value %}
                                                 {{ attribute.code_value }}
                                             {% else %}
                                                 {{ attribute.code_name }}
                                             {% endif %}
                                         </div>
-                                        <div class="col-6 text-start">
+                                        <div class="col-7 text-start">
                                             <span id="copyText-{{ attribute.code_name }}">
                                                 {{ attribute.value }}
                                             </span>

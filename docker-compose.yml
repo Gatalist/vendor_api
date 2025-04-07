@@ -37,12 +37,13 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
-#      - "443:443"
+      - "443:443"
     command: "/bin/sh /nginx-start-autoreload.sh"
     volumes:
       - ./source/staticfiles:/app/staticfiles
       - ./nginx/conf_dev/:/etc/nginx/conf.d/:ro
       - ./nginx/nginx-start-autoreload.sh:/nginx-start-autoreload.sh
+      - ./nginx/ssl_http:/home/alex_im/ssl_http
     environment:
       - DJANGO_PORT=${DJANGO_PORT:?error missing DJANGO_PORT env}
     depends_on:
