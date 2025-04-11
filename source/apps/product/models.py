@@ -25,6 +25,7 @@ class Attribute(BaseModel):
 
 
 class Category(BaseModel):
+    parent_id = models.IntegerField(null=True, blank=True)
     name = models.CharField('Имя', max_length=100)
     slug = models.SlugField(max_length=250, unique=True, db_index=True, verbose_name="url")
 

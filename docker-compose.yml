@@ -19,12 +19,12 @@ services:
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
 
-    command: sh -c "gunicorn core.wsgi:application --bind 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
-#    command: >
-#      sh -c "python manage.py makemigrations &&
-#             python manage.py migrate &&
-#             python manage.py collectstatic --noinput &&
-#             python manage.py runserver 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
+#    command: sh -c "gunicorn core.wsgi:application --bind 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
+    command: >
+       sh -c "python manage.py makemigrations &&
+       python manage.py migrate &&
+       python manage.py collectstatic --noinput &&
+       python manage.py runserver 0.0.0.0:${DJANGO_PORT:?error missing DJANGO_PORT env}"
     ports:
       - "8000:8000"
     volumes:
@@ -42,8 +42,10 @@ services:
     volumes:
       - ./source/staticfiles:/app/staticfiles
       - ./nginx/conf_dev/:/etc/nginx/conf.d/:ro
+#      - ./nginx/conf_prod/:/etc/nginx/conf.d/:ro
       - ./nginx/nginx-start-autoreload.sh:/nginx-start-autoreload.sh
-      - ./nginx/ssl_http:/home/alex_im/ssl_http
+#      - ./nginx/ssl_https:/home/ssl_https
+      - ./nginx/ssl_mkcert:/home/ssl_mkcert
     environment:
       - DJANGO_PORT=${DJANGO_PORT:?error missing DJANGO_PORT env}
     depends_on:
