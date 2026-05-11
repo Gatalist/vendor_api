@@ -10,43 +10,44 @@ from .cached import DatabaseCached
 from ..mti.downloader import download_and_convert_images, download_file_in_zip
 
 
-class CategoryView(DatabaseCached, APIView, TemplateView):
+class CategoryView(DatabaseCached, TemplateView):
     def get(self, request):
         context = {
             "category_list": self.get_main_categories(),
             "is_search": True,
         }
-        # print("category tree:", categories)
         return render(request, 'include/category_list.html', context)
 
 
-class SubCategoryView(DatabaseCached, APIView, TemplateView):
+class SubCategoryView(DatabaseCached, TemplateView):
     def get(self, request, category_id):
-        subcategory_list = []
-        for cat in self.get_all_categories():
-            if cat.get('parentID') == int(category_id) and not cat.get('parentID') in subcategory_list:
-                subcategory_list.append(cat)
+        try:
+            subcategory_list = self.get_subcategories(category_id)
+        except (ValueError, TypeError):
+            subcategory_list = []
 
         context = {
             "category_id": category_id,
             "subcategory_list": subcategory_list,
             "is_search": True,
         }
-        # print("subcategory context:", context)
         return render(request, 'include/subcategory_list.html', context)
 
 
-class ProductListView(DatabaseCached, APIView, TemplateView):
+class ProductListView(DatabaseCached, TemplateView):
     def get(self, request, category_id, subcategory_id):
-        context = self.get_products_category(subcategory_id)
+        try:
+            context = self.get_products_category(subcategory_id)
+        except (ValueError, TypeError):
+            context = {"products_list": []}
+
         context["category_id"] = category_id
         context["subcategory_id"] = subcategory_id
         context["is_search"] = True
-        # print("product context:", context)
         return render(request, 'include/product_list.html', context)
 
 
-class ProductDetailView(DatabaseCached, APIView, TemplateView):
+class ProductDetailView(DatabaseCached, TemplateView):
     def get(self, request, category_id, subcategory_id, product_id):
         product = self.get_product_info(subcategory_id, product_id)
         context = {
@@ -55,7 +56,6 @@ class ProductDetailView(DatabaseCached, APIView, TemplateView):
             "subcategory_id": subcategory_id,
             "is_search": False,
         }
-        print("product context:", context)
         return render(request, 'include/product_detail.html', context)
 
 

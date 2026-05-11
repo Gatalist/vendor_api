@@ -34,6 +34,10 @@ class DatabaseCached:
             cache.set(name_cache, data_cache, timeout=self.cached_time)
             return data_cache
 
+    def get_subcategories(self, parent_id: int) -> list:
+        categories = self.get_all_categories()
+        return [cat for cat in categories if cat.get('parentID') == int(parent_id)]
+
     def get_products_category(self, category_id: int) -> dict:
         name_cache = f'products_list_{category_id}'
         cached_data = cache.get(name_cache)
@@ -49,20 +53,18 @@ class DatabaseCached:
     def get_product_info(self, category_id: int, product_id: int) -> dict:
         name_cache = f'products_list_{category_id}'
         cached_data = cache.get(name_cache)
-        if cached_data is not None:
-            print(f"Получены закэшированные данные для категории {category_id}")
-            data_cache_products_list = cached_data["products_list"]
-            product_info = [product for product in data_cache_products_list if product.get('id') == int(product_id)]
-            if product_info:
-                return product_info[0]
-            return {}
-        else:
-            print(f"Данные записаны в кэш")
-            data_cache = parser.get_products_for_category(cat_id=category_id)
-            cache.set(name_cache, data_cache, timeout=self.cached_time)
-            data_cache_products_list = data_cache["products_list"]
-            product_info = [product for product in data_cache_products_list if product.get('id') == int(product_id)]
 
-            if product_info:
-                return product_info[0]
+        if cached_data is None:
+            print(f"Данные для категории {category_id} не найдены в кэше. Загружаем...")
+            cached_data = parser.get_products_for_category(cat_id=category_id)
+            cache.set(name_cache, cached_data, timeout=self.cached_time)
+        else:
+            print(f"Получены закэшированные данные для категории {category_id}")
+
+        products_list = cached_data.get("products_list", [])
+        try:
+            p_id = int(product_id)
+            product = next((p for p in products_list if p.get('id') == p_id), {})
+            return product
+        except (ValueError, TypeError):
             return {}

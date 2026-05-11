@@ -15,7 +15,6 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 DEBUG = env.bool("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
-print("ALLOWED_HOSTS", ALLOWED_HOSTS)
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -98,8 +97,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-cache-name",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://mti-redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 

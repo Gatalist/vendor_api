@@ -1,3 +1,5 @@
+name: vendor-mti-api
+
 services:
   mti-database:
     image: postgres:16-alpine
@@ -10,6 +12,13 @@ services:
       - web-net
     volumes:
       - ./db_volume:/var/lib/postgresql
+
+  mti-redis:
+    image: redis:7-alpine
+    container_name: mti_redis
+    networks:
+      - web-net
+    restart: always
 
   mti-app:
     build: .
